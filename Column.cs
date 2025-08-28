@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public partial class Column : Node2D
 {
+	[Signal]
+	public delegate void PlayerDropedEventHandler();
+
 	List<Tile> tiles = new List<Tile>();
 	public int pieceNumber = 0;
 
@@ -21,6 +24,13 @@ public partial class Column : Node2D
 	{
 		GetNode<Button>("Button").SetDeferred(Button.PropertyName.Disabled, isDisable);
 	}
+
+	public void OnButtonPressed() 
+	{
+		DropPiece(Tile.State.Blue);
+		EmitSignal(SignalName.PlayerDroped);
+	}
+
 	public override void _Ready()
 	{
 		for(int i = 0; i< 6; i++) 
