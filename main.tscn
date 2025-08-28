@@ -89,6 +89,7 @@ theme_override_colors/font_color = Color(1, 0, 0, 1)
 theme_override_font_sizes/font_size = 64
 text = "你输了"
 
+[connection signal="CallAI" from="." to="." method="AIMove"]
 [connection signal="GameOver" from="." to="." method="OnGameOver"]
 [connection signal="GameReset" from="." to="." method="OnGameReset"]
 [connection signal="PlayerDroped" from="Column0" to="." method="OnPlayerDroped"]

@@ -12,12 +12,13 @@ public partial class Column : Node2D
 
 	public void DropPiece(Tile.State state) 
 	{
-		tiles[pieceNumber].SetState(state);
-		pieceNumber++;
-		if(pieceNumber == 6) 
+		if (pieceNumber == 6)
 		{
 			SetButtonDisable(true);
+			return;
 		}
+		tiles[pieceNumber].SetState(state);
+		pieceNumber++;
 
 	}
 	public void SetButtonDisable(bool isDisable) 

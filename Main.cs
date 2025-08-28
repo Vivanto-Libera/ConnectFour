@@ -10,6 +10,8 @@ public partial class Main : Node
 	public delegate void GameOverEventHandler(int result);
 	[Signal]
 	public delegate void GameResetEventHandler();
+	[Signal]
+	public delegate void CallAIEventHandler();
 
 	public Column[] columns = new Column[7];
 
@@ -36,6 +38,14 @@ public partial class Main : Node
 		SetAllTileWhite();
 		GetNode<Button>("First").Show();
 		GetNode<Button>("Second").Show();
+		foreach(Column column in columns) 
+		{
+			column.pieceNumber = 0;
+			foreach(Tile tile in column.tiles) 
+			{
+				tile.SetState(White);
+			}
+		}
 	}
 	public void AIMove() 
 	{
@@ -54,7 +64,7 @@ public partial class Main : Node
 		if (isPlayer)
 		{
 			SetAllButtonDisable(true);
-			AIMove();
+			EmitSignal(SignalName.CallAI);
 		}
 		else 
 		{
@@ -71,9 +81,9 @@ public partial class Main : Node
 	{
 		GetNode<Button>("First").Hide();
 		GetNode<Button>("Second").Hide();
-		AIMove();
+		EmitSignal(SignalName.CallAI);
 	}
-	public async Task OnGameOver(int result) 
+	public async void OnGameOver(int result) 
 	{
 		SetAllButtonDisable(true);
 		Label message = GetNode<Label>("Message");
@@ -176,6 +186,7 @@ public class AlphaBeta
 				if(newV > maxValue) 
 				{
 					WhereDrop = i;
+					maxValue = newV;
 				}
 			}
 			if (newV >= beta) 
@@ -202,11 +213,11 @@ public class AlphaBeta
 		{
 			return 0;
 		}
-        if (dep == DEPTH)
-        {
-            return Evaluate();
-        }
-        int v = 100;
+		if (dep == DEPTH)
+		{
+			return Evaluate();
+		}
+		int v = 100;
 		for (int i = 0; i < 7; i++)
 		{
 			if (columnPiece[i] == 6)
@@ -232,13 +243,13 @@ public class AlphaBeta
 	private int Evaluate() 
 	{
 		int v = 0;
-        for (int i = 0; i < 7; i++)
-        {
+		for (int i = 0; i < 7; i++)
+		{
 			int count = columnPiece[i];
-            if (count < 3 && count == 6)
-            {
-                continue;
-            }
+			if (count < 3 || count == 6)
+			{
+				continue;
+			}
 			if (board[i, count - 1] == board[i, count - 2] && board[i, count - 1] == board[i, count - 3]) 
 			{
 				if (board[i, count - 1] == Red) 
@@ -250,10 +261,10 @@ public class AlphaBeta
 					v -= 2;
 				}
 			}
-        }
-        for (int i = 0; i < 6; i++)
-        {
-            for(int j = 0; j < 5; j++) 
+		}
+		for (int i = 0; i < 6; i++)
+		{
+			for(int j = 0; j < 5; j++) 
 			{
 				if (board[j, i] == White) 
 				{
@@ -265,103 +276,103 @@ public class AlphaBeta
 					{
 						if (board[j - 1, i] == White) 
 						{
-                            if (board[j, i] == Red)
-                            {
-                                v += 1;
-                            }
-                            else
-                            {
-                                v -= 1;
-                            }
-                        }
+							if (board[j, i] == Red)
+							{
+								v += 1;
+							}
+							else
+							{
+								v -= 1;
+							}
+						}
 					}
 					if(j != 4) 
 					{
-                        if (board[j + 1, i] == White)
-                        {
-                            if (board[j, i] == Red)
-                            {
-                                v += 1;
-                            }
-                            else
-                            {
-                                v -= 1;
-                            }
-                        }
-                    }
+						if (board[j + 1, i] == White)
+						{
+							if (board[j, i] == Red)
+							{
+								v += 1;
+							}
+							else
+							{
+								v -= 1;
+							}
+						}
+					}
 				}
 			}
-        }
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 3; j < columnPiece[i]; j++)
-            {
-                if (board[i, j] == board[i + 1, j - 1] && board[i, j] == board[i + 2, j - 2])
-                {
+		}
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 3; j < columnPiece[i]; j++)
+			{
+				if (board[i, j] == board[i + 1, j - 1] && board[i, j] == board[i + 2, j - 2])
+				{
 					if (board[i + 3, j - 3] == White) 
 					{
-                        if (board[i, j] == Red)
-                        {
-                            v += 1;
-                        }
-                        else
-                        {
-                            v -= 1;
-                        }
-                    }
+						if (board[i, j] == Red)
+						{
+							v += 1;
+						}
+						else
+						{
+							v -= 1;
+						}
+					}
 					if(i != 0 && j != 5) 
 					{
 						if (board[i - 1, j + 1] == White) 
 						{
-                            if (board[i, j] == Red)
-                            {
-                                v += 1;
-                            }
-                            else
-                            {
-                                v -= 1;
-                            }
-                        }
+							if (board[i, j] == Red)
+							{
+								v += 1;
+							}
+							else
+							{
+								v -= 1;
+							}
+						}
 					}
-                }
-            }
-        }
-        for (int i = 6; i > 2; i--)
-        {
-            for (int j = 3; j < columnPiece[i]; j++)
-            {
-                if (board[i, j] == board[i - 1, j - 1] && board[i, j] == board[i - 2, j - 2])
-                {
-                    if (board[i - 3, j - 3] == White)
-                    {
-                        if (board[i, j] == Red)
-                        {
-                            v += 1;
-                        }
-                        else
-                        {
-                            v -= 1;
-                        }
-                    }
-                    if (i != 6 && j != 5)
-                    {
-                        if (board[i + 1, j + 1] == White)
-                        {
-                            if (board[i, j] == Red)
-                            {
-                                v += 1;
-                            }
-                            else
-                            {
-                                v -= 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+				}
+			}
+		}
+		for (int i = 6; i > 2; i--)
+		{
+			for (int j = 3; j < columnPiece[i]; j++)
+			{
+				if (board[i, j] == board[i - 1, j - 1] && board[i, j] == board[i - 2, j - 2])
+				{
+					if (board[i - 3, j - 3] == White)
+					{
+						if (board[i, j] == Red)
+						{
+							v += 1;
+						}
+						else
+						{
+							v -= 1;
+						}
+					}
+					if (i != 6 && j != 5)
+					{
+						if (board[i + 1, j + 1] == White)
+						{
+							if (board[i, j] == Red)
+							{
+								v += 1;
+							}
+							else
+							{
+								v -= 1;
+							}
+						}
+					}
+				}
+			}
+		}
 		return v;
-    }
+	}
 	public WhoWin JudgeWhoWin() 
 	{
 		for(int i = 0; i < 7; i++) 
