@@ -169,6 +169,82 @@ public class AlphaBeta
     }
     public WhoWin JudgeWhoWin() 
     {
-
+        for(int i = 0; i < 7; i++) 
+        {
+            if (columnPiece[i] < 4) 
+            {
+                continue;
+            }
+            for(int j = 0; j <= columnPiece[i] - 4; j++) 
+            {
+                if (board[i ,j] == board[i, j + 1] && board[i, j] == board[i, j + 2]
+                                                   && board[i, j] == board[i, j + 3]) 
+                {
+                    return StateToWhoWin(board[i, j]);
+                }
+            }
+        }
+        for(int i = 0;i < 6; i++) 
+        {
+            if (board[i, 3] == White) 
+            {
+                continue;
+            }
+            if (board[i ,3] == board[i, 2] && board[i, 3] == board[i, 1]) 
+            {
+                if (board[i, 3] == board[i, 0] || board[i, 3] == board[i, 4]) 
+                {
+                    return StateToWhoWin(board[i, 3]);
+                }
+            }
+            if (board[i, 3] == board[i, 4] && board[i, 3] == board[i, 5])
+            {
+                if (board[i, 3] == board[i, 2] || board[i, 3] == board[i, 6])
+                {
+                    return StateToWhoWin(board[i, 3]);
+                }
+            }
+        }
+        for(int i = 0; i < 4; i++) 
+        {
+            for(int j = 3; j < columnPiece[i]; j++) 
+            {
+                if (board[i, j] == board[i + 1, j - 1] && board[i, j] == board[i + 2, j - 2]
+                                                       && board[i, j] == board[i + 3, j - 3]) 
+                {
+                    return StateToWhoWin(board[i, j]);
+                }
+            }
+        }
+        for (int i = 6; i > 2; i--)
+        {
+            for (int j = 3; j < columnPiece[i]; j++)
+            {
+                if (board[i, j] == board[i - 1, j - 1] && board[i, j] == board[i - 2, j - 2]
+                                                       && board[i, j] == board[i - 3, j - 3])
+                {
+                    return StateToWhoWin(board[i, j]);
+                }
+            }
+        }
+        foreach(int aColumn in columnPiece) 
+        {
+            if(aColumn != 6) 
+            {
+                return WhoWin.NotEnd;
+            }
+        }
+        return WhoWin.Draw;
+    }
+    public WhoWin StateToWhoWin(Tile.State state) 
+    {
+        if(state == Red) 
+        {
+            return WhoWin.RedWin;
+        }
+        else 
+        {
+            return WhoWin.BlueWin;
+        }
     }
 }
