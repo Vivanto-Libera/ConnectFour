@@ -39,3 +39,20 @@ public partial class Main : Node
 		}
 	}
 }
+
+public class AlphaBeta 
+{
+	public Tile.State[,] board = new Tile.State[7, 6];
+	
+	public AlphaBeta(Column[] columns) 
+	{
+		for(int i = 0; i < 7; i++) 
+		{
+			Tile.State[] states = columns[i].GetStates();
+			for(int j = 0; j < 6; j++) 
+			{
+				board[i, j] = states[j];
+			}
+		}
+	}
+}
