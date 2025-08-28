@@ -144,9 +144,7 @@ public class AlphaBeta
 	}
 	public int GetColumn()
 	{
-		int alpha = -2;
-		int beta = 2;
-		MaxValue(ref alpha, ref beta, true);
+		MaxValue(-2, 2, true);
 		if (action1.Count != 0)
 		{
 			return action1[GD.RandRange(0, action1.Count - 1)];
@@ -157,7 +155,7 @@ public class AlphaBeta
 		}
 		return actionm1[GD.RandRange(0, actionm1.Count - 1)];
 	}
-	private int MaxValue(ref int alpha, ref int beta, bool isFirst)
+	private int MaxValue(int alpha, int beta, bool isFirst)
 	{
 		WhoWin who = JudgeWhoWin();
 		if (who == WhoWin.BlueWin)
@@ -177,7 +175,7 @@ public class AlphaBeta
 			}
 			board[i, columnPiece[i]] = Red;
 			columnPiece[i]++;
-			int newV = MinValue(ref alpha, ref beta);
+			int newV = MinValue(alpha, beta);
 			if (isFirst) 
 			{
 				switch (newV) 
@@ -200,13 +198,13 @@ public class AlphaBeta
 				return newV;
 			}
 			v = newV > v ? newV : v;
+			alpha = v > alpha ? v : alpha;
 			columnPiece[i]--;
 			board[i, columnPiece[i]] = White;
 		}
-		alpha = v > alpha ? v : alpha;
 		return v;
 	}
-	private int MinValue(ref int alpha, ref int beta)
+	private int MinValue(int alpha, int beta)
 	{
 		WhoWin who = JudgeWhoWin();
 		if (who == WhoWin.RedWin)
@@ -226,7 +224,7 @@ public class AlphaBeta
 			}
 			board[i, columnPiece[i]] = Blue;
 			columnPiece[i]++;
-			int newV = MinValue(ref alpha, ref beta);
+			int newV = MinValue(alpha, beta);
 			if (newV >= beta)
 			{
 				columnPiece[i]--;
@@ -234,10 +232,10 @@ public class AlphaBeta
 				return newV;
 			}
 			v = newV > v ? newV : v;
+			beta = v < beta ? v : beta;
 			columnPiece[i]--;
 			board[i, columnPiece[i]] = White;
 		}
-		beta = v < beta ? v : beta;
 		return v;
 	}
 	public WhoWin JudgeWhoWin() 
