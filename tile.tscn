@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5kf7bpbvgm4"]
+
+[ext_resource type="Texture2D" uid="uid://cukd6q4ugnp03" path="res://Image/WhiteRound.png" id="1_n3f48"]
+
+[node name="Tile" type="Node2D"]
+
+[node name="BackGround" type="ColorRect" parent="."]
+offset_right = 100.0
+offset_bottom = 100.0
+color = Color(0, 0, 0, 1)
+
+[node name="TextureRect" type="TextureRect" parent="."]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 90.0
+offset_bottom = 90.0
+texture = ExtResource("1_n3f48")
+expand_mode = 1
