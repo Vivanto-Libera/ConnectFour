@@ -1,0 +1,29 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwnt3klbgjl22"]
+
+[ext_resource type="PackedScene" uid="uid://c5kf7bpbvgm4" path="res://tile.tscn" id="1_hh8dp"]
+
+[node name="Column" type="Node2D"]
+
+[node name="Tile0" parent="." instance=ExtResource("1_hh8dp")]
+position = Vector2(0, 600)
+
+[node name="Tile1" parent="." instance=ExtResource("1_hh8dp")]
+position = Vector2(0, 500)
+
+[node name="Tile2" parent="." instance=ExtResource("1_hh8dp")]
+position = Vector2(0, 400)
+
+[node name="Tile3" parent="." instance=ExtResource("1_hh8dp")]
+position = Vector2(0, 300)
+
+[node name="Tile4" parent="." instance=ExtResource("1_hh8dp")]
+position = Vector2(0, 200)
+
+[node name="Tile5" parent="." instance=ExtResource("1_hh8dp")]
+position = Vector2(0, 100)
+
+[node name="Button" type="Button" parent="."]
+offset_right = 100.0
+offset_bottom = 100.0
+theme_override_font_sizes/font_size = 32
+text = "落子"
