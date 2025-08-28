@@ -88,3 +88,15 @@ grow_vertical = 2
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 theme_override_font_sizes/font_size = 64
 text = "你输了"
+
+[connection signal="GameOver" from="." to="." method="OnGameOver"]
+[connection signal="GameReset" from="." to="." method="OnGameReset"]
+[connection signal="PlayerDroped" from="Column0" to="." method="OnPlayerDroped"]
+[connection signal="PlayerDroped" from="Column1" to="." method="OnPlayerDroped"]
+[connection signal="PlayerDroped" from="Column2" to="." method="OnPlayerDroped"]
+[connection signal="PlayerDroped" from="Column3" to="." method="OnPlayerDroped"]
+[connection signal="PlayerDroped" from="Column4" to="." method="OnPlayerDroped"]
+[connection signal="PlayerDroped" from="Column5" to="." method="OnPlayerDroped"]
+[connection signal="PlayerDroped" from="Column6" to="." method="OnPlayerDroped"]
+[connection signal="pressed" from="First" to="." method="OnFirstPressed"]
+[connection signal="pressed" from="Second" to="." method="OnSecondPressed"]
