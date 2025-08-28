@@ -31,6 +31,15 @@ public partial class Column : Node2D
 		EmitSignal(SignalName.PlayerDroped);
 	}
 
+	public Tile.State[] GetStates() 
+	{
+		Tile.State[] states = new Tile.State[6];
+		for(int i = 0; i < 6; i++) 
+		{
+			states[i] = tiles[i].GetState();
+		}
+		return states;
+	}
 	public override void _Ready()
 	{
 		for(int i = 0; i< 6; i++) 
