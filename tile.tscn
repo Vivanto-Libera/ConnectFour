@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://c5kf7bpbvgm4"]
+[gd_scene load_steps=3 format=3 uid="uid://c5kf7bpbvgm4"]
 
 [ext_resource type="Texture2D" uid="uid://cukd6q4ugnp03" path="res://Image/WhiteRound.png" id="1_n3f48"]
+[ext_resource type="Script" uid="uid://cebs0y4xqqh1d" path="res://Tile.cs" id="1_vx4y2"]
 
 [node name="Tile" type="Node2D"]
+script = ExtResource("1_vx4y2")
 
 [node name="BackGround" type="ColorRect" parent="."]
 offset_right = 100.0
