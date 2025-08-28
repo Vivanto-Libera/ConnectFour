@@ -7,7 +7,7 @@ public partial class Column : Node2D
 	[Signal]
 	public delegate void PlayerDropedEventHandler();
 
-	List<Tile> tiles = new List<Tile>();
+	public List<Tile> tiles = new List<Tile>();
 	public int pieceNumber = 0;
 
 	public void DropPiece(Tile.State state) 

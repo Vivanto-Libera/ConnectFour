@@ -1,8 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://bwor7bs3k5ah6"]
+[gd_scene load_steps=3 format=3 uid="uid://bwor7bs3k5ah6"]
 
+[ext_resource type="Script" uid="uid://dp5lf0pp64er" path="res://Main.cs" id="1_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://bwnt3klbgjl22" path="res://column.tscn" id="1_ig7tw"]
 
 [node name="Main" type="Node"]
+script = ExtResource("1_0xm2m")
 
 [node name="Column0" parent="." instance=ExtResource("1_ig7tw")]
 
