@@ -124,12 +124,11 @@ public class AlphaBeta
 		NotEnd,
 	}
 
-	List<int> action1 = new List<int>();
-	List<int> action0 = new List<int>();
-	List<int> actionm1 = new List<int>();
+	int WhereDrop = -1;
+	int maxValue = -100;
 	public Tile.State[,] board = new Tile.State[7, 6];
 	public int[] columnPiece = new int[7];
-	
+	private const int DEPTH = 8;
 	public AlphaBeta(Column[] columns) 
 	{
 		for(int i = 0; i < 7; i++) 
@@ -144,29 +143,25 @@ public class AlphaBeta
 	}
 	public int GetColumn()
 	{
-		MaxValue(-2, 2, true);
-		if (action1.Count != 0)
-		{
-			return action1[GD.RandRange(0, action1.Count - 1)];
-		}
-		if (action0.Count != 0)
-		{
-			return action0[GD.RandRange(0, action0.Count - 1)];
-		}
-		return actionm1[GD.RandRange(0, actionm1.Count - 1)];
+		MaxValue(-100, 100, true, 0);
+		return WhereDrop;
 	}
-	private int MaxValue(int alpha, int beta, bool isFirst)
+	private int MaxValue(int alpha, int beta, bool isFirst, int dep)
 	{
 		WhoWin who = JudgeWhoWin();
 		if (who == WhoWin.BlueWin)
 		{
-			return -1;
+			return -50;
 		}
 		if (who == WhoWin.Draw)
 		{
 			return 0;
 		}
-		int v = -2;
+		if(dep == DEPTH) 
+		{
+			return Evaluate();
+		}
+		int v = -100;
 		for(int i = 0; i < 7; i++) 
 		{
 			if (columnPiece[i] == 6) 
@@ -175,20 +170,12 @@ public class AlphaBeta
 			}
 			board[i, columnPiece[i]] = Red;
 			columnPiece[i]++;
-			int newV = MinValue(alpha, beta);
+			int newV = MinValue(alpha, beta, dep + 1);
 			if (isFirst) 
 			{
-				switch (newV) 
+				if(newV > maxValue) 
 				{
-					case -1:
-						actionm1.Add(i);
-						break;
-					case 0:
-						action0.Add(i);
-						break;
-					case 1:
-						action1.Add(i);
-						break;
+					WhereDrop = i;
 				}
 			}
 			if (newV >= beta) 
@@ -204,18 +191,22 @@ public class AlphaBeta
 		}
 		return v;
 	}
-	private int MinValue(int alpha, int beta)
+	private int MinValue(int alpha, int beta, int dep)
 	{
 		WhoWin who = JudgeWhoWin();
 		if (who == WhoWin.RedWin)
 		{
-			return 1;
+			return 50;
 		}
 		if (who == WhoWin.Draw)
 		{
 			return 0;
 		}
-		int v = 2;
+        if (dep == DEPTH)
+        {
+            return Evaluate();
+        }
+        int v = 100;
 		for (int i = 0; i < 7; i++)
 		{
 			if (columnPiece[i] == 6)
@@ -224,55 +215,186 @@ public class AlphaBeta
 			}
 			board[i, columnPiece[i]] = Blue;
 			columnPiece[i]++;
-			int newV = MinValue(alpha, beta);
-			if (newV >= beta)
+			int newV = MaxValue(alpha, beta, false, dep + 1);
+			if (newV <= alpha)
 			{
 				columnPiece[i]--;
 				board[i, columnPiece[i]] = White;
 				return newV;
 			}
-			v = newV > v ? newV : v;
+			v = newV < v ? newV : v;
 			beta = v < beta ? v : beta;
 			columnPiece[i]--;
 			board[i, columnPiece[i]] = White;
 		}
 		return v;
 	}
+	private int Evaluate() 
+	{
+		int v = 0;
+        for (int i = 0; i < 7; i++)
+        {
+			int count = columnPiece[i];
+            if (count < 3 && count == 6)
+            {
+                continue;
+            }
+			if (board[i, count - 1] == board[i, count - 2] && board[i, count - 1] == board[i, count - 3]) 
+			{
+				if (board[i, count - 1] == Red) 
+				{
+					v += 2;
+				}
+				else 
+				{
+					v -= 2;
+				}
+			}
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            for(int j = 0; j < 5; j++) 
+			{
+				if (board[j, i] == White) 
+				{
+					continue;
+				}
+				if (board[j, i] == board[j + 1, i] && board[j, i] == board[j + 2, i]) 
+				{
+					if(j != 0) 
+					{
+						if (board[j - 1, i] == White) 
+						{
+                            if (board[j, i] == Red)
+                            {
+                                v += 1;
+                            }
+                            else
+                            {
+                                v -= 1;
+                            }
+                        }
+					}
+					if(j != 4) 
+					{
+                        if (board[j + 1, i] == White)
+                        {
+                            if (board[j, i] == Red)
+                            {
+                                v += 1;
+                            }
+                            else
+                            {
+                                v -= 1;
+                            }
+                        }
+                    }
+				}
+			}
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 3; j < columnPiece[i]; j++)
+            {
+                if (board[i, j] == board[i + 1, j - 1] && board[i, j] == board[i + 2, j - 2])
+                {
+					if (board[i + 3, j - 3] == White) 
+					{
+                        if (board[i, j] == Red)
+                        {
+                            v += 1;
+                        }
+                        else
+                        {
+                            v -= 1;
+                        }
+                    }
+					if(i != 0 && j != 5) 
+					{
+						if (board[i - 1, j + 1] == White) 
+						{
+                            if (board[i, j] == Red)
+                            {
+                                v += 1;
+                            }
+                            else
+                            {
+                                v -= 1;
+                            }
+                        }
+					}
+                }
+            }
+        }
+        for (int i = 6; i > 2; i--)
+        {
+            for (int j = 3; j < columnPiece[i]; j++)
+            {
+                if (board[i, j] == board[i - 1, j - 1] && board[i, j] == board[i - 2, j - 2])
+                {
+                    if (board[i - 3, j - 3] == White)
+                    {
+                        if (board[i, j] == Red)
+                        {
+                            v += 1;
+                        }
+                        else
+                        {
+                            v -= 1;
+                        }
+                    }
+                    if (i != 6 && j != 5)
+                    {
+                        if (board[i + 1, j + 1] == White)
+                        {
+                            if (board[i, j] == Red)
+                            {
+                                v += 1;
+                            }
+                            else
+                            {
+                                v -= 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+		return v;
+    }
 	public WhoWin JudgeWhoWin() 
 	{
 		for(int i = 0; i < 7; i++) 
 		{
-			if (columnPiece[i] < 4) 
+			int count = columnPiece[i];
+			if (count < 4) 
 			{
 				continue;
 			}
-			for(int j = 0; j <= columnPiece[i] - 4; j++) 
+			if (board[i ,count - 1] == board[i, count - 2] && board[i, count - 1] == board[i, count - 3]
+												   && board[i, count - 1] == board[i, count - 4]) 
 			{
-				if (board[i ,j] == board[i, j + 1] && board[i, j] == board[i, j + 2]
-												   && board[i, j] == board[i, j + 3]) 
-				{
-					return StateToWhoWin(board[i, j]);
-				}
+				return StateToWhoWin(board[i, count - 1]);
 			}
 		}
-		for(int i = 0;i < 6; i++) 
+		for(int i = 0; i < 6; i++) 
 		{
-			if (board[i, 3] == White) 
+			if (board[3, i] == White) 
 			{
 				continue;
 			}
-			if (board[i ,3] == board[i, 2] && board[i, 3] == board[i, 1]) 
+			if (board[3, i] == board[2, i] && board[3, i] == board[1, i]) 
 			{
-				if (board[i, 3] == board[i, 0] || board[i, 3] == board[i, 4]) 
+				if (board[3, i] == board[0, i] || board[3, i] == board[4, i]) 
 				{
-					return StateToWhoWin(board[i, 3]);
+					return StateToWhoWin(board[3, i]);
 				}
 			}
-			if (board[i, 3] == board[i, 4] && board[i, 3] == board[i, 5])
+			if (board[3, i] == board[4, i] && board[3, i] == board[5, i])
 			{
-				if (board[i, 3] == board[i, 2] || board[i, 3] == board[i, 6])
+				if (board[3, i] == board[2, i] || board[3, i] == board[6, i])
 				{
-					return StateToWhoWin(board[i, 3]);
+					return StateToWhoWin(board[3, i]);
 				}
 			}
 		}
@@ -313,9 +435,13 @@ public class AlphaBeta
 		{
 			return WhoWin.RedWin;
 		}
-		else 
+		else if(state == Blue)
 		{
 			return WhoWin.BlueWin;
+		}
+		else 
+		{
+			return WhoWin.NotEnd;
 		}
 	}
 }
